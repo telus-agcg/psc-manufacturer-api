@@ -12,7 +12,7 @@ namespace PSC.Manufacturer.API.Core.Entities
         public string Address_1 { get; set; }
         public string Address_2 { get; set; }
         public string City { get; set; }
-        public string State_Code { get; set; }
+        public string? State_Code { get; set; }
         public string Zip_Code { get; set; }
         public string Edi_Contact { get; set; }
         public string Phone { get; set; }
