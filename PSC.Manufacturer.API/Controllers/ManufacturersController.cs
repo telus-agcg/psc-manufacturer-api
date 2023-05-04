@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PSC.Manufacturer.API.Core;
+using PSC.Manufacturer.API.Core.Dtos;
 using PSC.Manufacturer.API.DataAccess;
 
 namespace PSC.Manufacturer.API.Controllers
@@ -29,6 +30,36 @@ namespace PSC.Manufacturer.API.Controllers
                     return NotFound();
                 }
 
+                return new OkObjectResult(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(500);
+            }
+        }
+        
+        [HttpGet("GetByVendorKey/{vendorKey}")]
+        public async Task<ActionResult> GetByVendorKey(int vendorKey)
+        {
+            try
+            {
+                var result = await _repository.GetManufacturerByVendorKey(vendorKey);
+                return new OkObjectResult(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(500);
+            }
+        }
+        
+        [HttpGet("Search")]
+        public async Task<ActionResult> Search([FromQuery] ManufacturerFilter filter)
+        {
+            try
+            {
+                var result = await _repository.Search(filter);
                 return new OkObjectResult(result);
             }
             catch (Exception ex)
