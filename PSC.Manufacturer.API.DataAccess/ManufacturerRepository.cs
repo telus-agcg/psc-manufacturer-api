@@ -16,7 +16,6 @@ namespace PSC.Manufacturer.API.DataAccess
 
         public async Task<Core.Entities.Manufacturer> GetManufacturerById(int id)
         {
-            throw new NotImplementedException();
             var result = await _context.Manufacturers.AsNoTracking().FirstOrDefaultAsync(x=>x.Mfg_Key == id);
             return (result != null) ? result : new Core.Entities.Manufacturer();
         }
