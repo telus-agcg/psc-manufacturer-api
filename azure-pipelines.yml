@@ -8,7 +8,6 @@ trigger:
 - feature/*
 - hotfix/*
 
-
 pool:
   vmImage: 'windows-latest'
 
@@ -50,3 +49,4 @@ extends:
 
     PRD_Environment: PRD-Core1.PRDWebCore1A
     PRD_webConfigTransform: web.prod.config
+
