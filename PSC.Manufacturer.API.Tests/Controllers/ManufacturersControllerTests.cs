@@ -50,7 +50,7 @@ namespace PSC.Manufacturer.API.Tests.Controllers
                 Zip_Code = "test"
             };
 
-            _repository.Setup(x=>x.GetManufacturerById(It.IsAny<int>()))
+            _repository.Setup(x => x.GetManufacturerById(It.IsAny<int>()))
                 .ReturnsAsync(testEntity);
 
             var result = await _controller.Get(testEntity.Mfg_Key) as OkObjectResult;
@@ -138,7 +138,7 @@ namespace PSC.Manufacturer.API.Tests.Controllers
             };
 
             _repository.Setup(x => x.GetManufacturerById(It.IsAny<int>()))
-    .ReturnsAsync(testToUpdate);
+                .ReturnsAsync(testToUpdate);
 
             var testData = new Core.Entities.Manufacturer()
             {
@@ -156,13 +156,27 @@ namespace PSC.Manufacturer.API.Tests.Controllers
         [Fact]
         public async Task Update_Errors()
         {
-            
+            var testId = 1;
+            _repository.Setup(x => x.Update(It.IsAny<Core.Entities.Manufacturer>()))
+                .Throws<InvalidOperationException>();
+            var errorcode = StatusCodes.Status500InternalServerError;
+
+            var result = await _controller.Put(testId, new Core.Entities.Manufacturer());
+
+            var resultObject = Assert.IsType<StatusCodeResult>(result);
+            Assert.Equal(errorcode, resultObject.StatusCode);
         }
 
         [Fact]
         public async Task Update_NotFound()
         {
+            var testId = 1;
+            _repository.Setup(x => x.GetManufacturerById(It.IsAny<int>()))
+                .ReturnsAsync(new Core.Entities.Manufacturer());
 
+            var result = await _controller.Put(testId, new Core.Entities.Manufacturer());
+
+            var resultObject = Assert.IsType<NotFoundResult>(result);
         }
     }
 }

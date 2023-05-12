@@ -1,0 +1,52 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- develop
+- feature/*
+- hotfix/*
+
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+resources:
+ repositories:
+   - repository: DeploymentTemplates #alias name
+     type: git #type of repository
+     name: dcp-pipeline-templates-yml #repository name
+     ref: refs/heads/template #git branch reference
+
+
+extends:
+ template: iis_netcore6_template.stages.yml@DeploymentTemplates
+ parameters:
+    solutionPath: '**/*.sln'
+    websiteProjectName: 'PSC.Manufacturer.API'
+    iis_websiteName: PSC_Manufacturer_API_XSINC
+    iis_virtualApplicationName: PSC_Manufacturer_API/v1
+    packagePath: $(Pipeline.Workspace)\drop\PSC.Manufacturer.API.zip
+    removeAdditionalFiles: true
+    takeAppOffline: true
+    
+    Dev_Environment: Dev-Core1.DevWebCore1A
+    Dev_webConfigTransform: web.dev.config
+
+    QA_Environment: QA-Core1.QAWebCore1A
+    QA_webConfigTransform: web.qa.config
+
+    UAT_Environment: UAT-Core1.UATWebCore1A
+    UAT_webConfigTransform: web.uat.config
+
+    STG_Environment: STG-Core1.STGWebCore1A
+    STG_webConfigTransform: web.staging.config
+
+    PRD_Environment: PRD-Core1.PRDWebCore1A
+    PRD_webConfigTransform: web.prod.config
