@@ -51,6 +51,7 @@ try
     options.UseSqlServer(config.GetConnectionString("PSC_Manufacturer_Api_Connection")));
 
     builder.Services.AddTransient<IManufacturerRepository, ManufacturerRepository>();
+    builder.Services.AddTransient<IVendorRepository, VendorRepository>();
 
     var app = builder.Build();
 

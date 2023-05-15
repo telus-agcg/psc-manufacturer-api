@@ -10,11 +10,13 @@ namespace PSC.Manufacturer.API.Controllers
     public class ManufacturersController : ControllerBase
     {
         private readonly IManufacturerRepository _repository;
+        private readonly IVendorRepository _vendorRepository;
         private readonly ILogger<ManufacturersController> _logger;
 
-        public ManufacturersController(IManufacturerRepository repository, ILogger<ManufacturersController> logger)
+        public ManufacturersController(IManufacturerRepository repository, IVendorRepository vendorRepository, ILogger<ManufacturersController> logger)
         {
             _repository = repository;
+            _vendorRepository = vendorRepository;
             _logger = logger;
         }
 
@@ -75,6 +77,11 @@ namespace PSC.Manufacturer.API.Controllers
         {
             try
             {
+                if (!_vendorRepository.CheckIfVendorExists(manufacturer.Vendor_Key))
+                {
+                    return BadRequest("Vendor does not exist");
+                }
+
                 var result = await _repository.Create(manufacturer);
                 return new OkObjectResult(result);
             }
@@ -91,12 +98,18 @@ namespace PSC.Manufacturer.API.Controllers
         {
             try
             {
+
+
                 var result = await _repository.GetManufacturerById(id);
                 if (result.Mfg_Key == 0)
                 {
                     return NotFound();
                 }
 
+                if (!_vendorRepository.CheckIfVendorExists(manufacturer.Vendor_Key))
+                {
+                    return BadRequest("Vendor does not exist");
+                }
                 var updateResult = await _repository.Update(manufacturer);
                 return new OkObjectResult(updateResult);
             }
