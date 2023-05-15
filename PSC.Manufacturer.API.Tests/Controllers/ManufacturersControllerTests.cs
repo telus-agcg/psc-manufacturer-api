@@ -17,13 +17,15 @@ namespace PSC.Manufacturer.API.Tests.Controllers
     {
         private readonly Mock<ILogger<ManufacturersController>> _logger;
         private readonly Mock<IManufacturerRepository> _repository;
+        private readonly Mock<IVendorRepository> _vendorRepository;
         private readonly ManufacturersController _controller;
 
         public ManufacturersControllerTests()
         {
             _logger = new Mock<ILogger<ManufacturersController>>();
             _repository = new Mock<IManufacturerRepository>();
-            _controller = new ManufacturersController(_repository.Object, _logger.Object);
+            _vendorRepository = new Mock<IVendorRepository>();
+            _controller = new ManufacturersController(_repository.Object, _vendorRepository.Object, _logger.Object);
         }
 
         [Fact]
@@ -106,6 +108,9 @@ namespace PSC.Manufacturer.API.Tests.Controllers
             var testData = new Core.Entities.Manufacturer();
             var testKey = 123;
 
+            _vendorRepository.Setup(x => x.CheckIfVendorExists(It.IsAny<int>()))
+                .Returns(true);
+
             _repository.Setup(x => x.Create(It.IsAny<Core.Entities.Manufacturer>()))
                 .ReturnsAsync(testKey);
 
@@ -118,6 +123,9 @@ namespace PSC.Manufacturer.API.Tests.Controllers
         [Fact]
         public async Task Create_Errors()
         {
+            _vendorRepository.Setup(x => x.CheckIfVendorExists(It.IsAny<int>()))
+                .Returns(true);
+
             _repository.Setup(x => x.Create(It.IsAny<Core.Entities.Manufacturer>()))
                 .Throws<InvalidOperationException>();
             var errorcode = StatusCodes.Status500InternalServerError;
@@ -129,6 +137,17 @@ namespace PSC.Manufacturer.API.Tests.Controllers
         }
 
         [Fact]
+        public async Task Create_VendorNotFound()
+        {
+            _vendorRepository.Setup(x => x.CheckIfVendorExists(It.IsAny<int>()))
+                .Returns(false);
+
+            var result = await _controller.Post(new Core.Entities.Manufacturer());
+
+            var resultObject = Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
         public async Task Update_Succeeds()
         {
             var testToUpdate = new Core.Entities.Manufacturer()
@@ -136,6 +155,9 @@ namespace PSC.Manufacturer.API.Tests.Controllers
                 Mfg_Key = 123,
                 Address_1 = "test"
             };
+
+            _vendorRepository.Setup(x => x.CheckIfVendorExists(It.IsAny<int>()))
+                .Returns(true);
 
             _repository.Setup(x => x.GetManufacturerById(It.IsAny<int>()))
                 .ReturnsAsync(testToUpdate);
@@ -157,6 +179,9 @@ namespace PSC.Manufacturer.API.Tests.Controllers
         public async Task Update_Errors()
         {
             var testId = 1;
+            _vendorRepository.Setup(x => x.CheckIfVendorExists(It.IsAny<int>()))
+                .Returns(true);
+
             _repository.Setup(x => x.Update(It.IsAny<Core.Entities.Manufacturer>()))
                 .Throws<InvalidOperationException>();
             var errorcode = StatusCodes.Status500InternalServerError;
@@ -170,6 +195,9 @@ namespace PSC.Manufacturer.API.Tests.Controllers
         [Fact]
         public async Task Update_NotFound()
         {
+            _vendorRepository.Setup(x => x.CheckIfVendorExists(It.IsAny<int>()))
+                .Returns(true);
+
             var testId = 1;
             _repository.Setup(x => x.GetManufacturerById(It.IsAny<int>()))
                 .ReturnsAsync(new Core.Entities.Manufacturer());
@@ -178,5 +206,27 @@ namespace PSC.Manufacturer.API.Tests.Controllers
 
             var resultObject = Assert.IsType<NotFoundResult>(result);
         }
+
+        [Fact]
+        public async Task Update_VendorNotFound()
+        {
+            var testToUpdate = new Core.Entities.Manufacturer()
+            {
+                Mfg_Key = 123,
+                Address_1 = "test"
+            };
+
+            _vendorRepository.Setup(x => x.CheckIfVendorExists(It.IsAny<int>()))
+                .Returns(false);
+
+            var testId = 1;
+            _repository.Setup(x => x.GetManufacturerById(It.IsAny<int>()))
+                .ReturnsAsync(testToUpdate);
+
+            var result = await _controller.Put(testId, new Core.Entities.Manufacturer());
+
+            var resultObject = Assert.IsType<BadRequestObjectResult>(result);
+        }
+
     }
 }

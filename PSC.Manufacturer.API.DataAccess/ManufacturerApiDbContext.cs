@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PSC.Manufacturer.API.Core.Entities;
+using System.Security.Cryptography.X509Certificates;
 
 namespace PSC.Manufacturer.API.DataAccess
 {
@@ -21,8 +23,13 @@ namespace PSC.Manufacturer.API.DataAccess
 
             modelBuilder.Entity<Core.Entities.Manufacturer>()
                 .Property(x => x.State_Code).HasColumnType("char (2)");
+
+            modelBuilder.Entity<Vendor>()
+                .ToTable("Vendor")
+                .HasKey(x => x.Vendor_Key);
         }
 
         public DbSet<Core.Entities.Manufacturer> Manufacturers { get; set; }
+        public DbSet<Vendor> Vendors { get; set; }
     }
 }
