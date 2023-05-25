@@ -77,9 +77,19 @@ namespace PSC.Manufacturer.API.Controllers
         {
             try
             {
+                if (manufacturer.Mfg_Key != 0)
+                {
+                    return BadRequest("Cannot specify key for new record. Please remove mfg_key or set to 0.");
+                }
+
                 if (!_vendorRepository.CheckIfVendorExists(manufacturer.Vendor_Key))
                 {
                     return BadRequest("Vendor does not exist");
+                }
+
+                if (manufacturer.Inserted_Date_Time.Year == 0001)
+                {
+                    manufacturer.Inserted_Date_Time = DateTime.Now;
                 }
 
                 var result = await _repository.Create(manufacturer);
@@ -98,10 +108,8 @@ namespace PSC.Manufacturer.API.Controllers
         {
             try
             {
-
-
-                var result = await _repository.GetManufacturerById(id);
-                if (result.Mfg_Key == 0)
+                var recordToUpdate = await _repository.GetManufacturerById(id);
+                if (recordToUpdate.Mfg_Key == 0)
                 {
                     return NotFound();
                 }
@@ -110,6 +118,12 @@ namespace PSC.Manufacturer.API.Controllers
                 {
                     return BadRequest("Vendor does not exist");
                 }
+
+                if (manufacturer.Inserted_Date_Time.Year == 0001)
+                {
+                    manufacturer.Inserted_Date_Time = recordToUpdate.Inserted_Date_Time;
+                }
+
                 var updateResult = await _repository.Update(manufacturer);
                 return new OkObjectResult(updateResult);
             }
