@@ -56,7 +56,7 @@ try
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
-    if (app.Environment.EnvironmentName != "PROD")
+    if (!new[] { "PROD", "UAT" }.Contains(app.Environment.EnvironmentName))
     {
         app.UseSwagger();
         app.UseSwaggerUI();
