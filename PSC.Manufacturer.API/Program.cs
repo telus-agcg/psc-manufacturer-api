@@ -53,6 +53,8 @@ try
     builder.Services.AddTransient<IManufacturerRepository, ManufacturerRepository>();
     builder.Services.AddTransient<IVendorRepository, VendorRepository>();
 
+    builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader()));
+
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
@@ -70,6 +72,8 @@ try
     app.UseHttpsRedirection();
 
     app.UseAuthorization();
+
+    app.UseCors();
 
     app.MapControllers();
 

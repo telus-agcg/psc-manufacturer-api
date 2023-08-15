@@ -40,7 +40,7 @@ namespace PSC.Manufacturer.API.Controllers
                 return StatusCode(500);
             }
         }
-        
+
         [HttpGet("GetByVendorKey/{vendorKey}")]
         public async Task<ActionResult> GetByVendorKey(int vendorKey)
         {
