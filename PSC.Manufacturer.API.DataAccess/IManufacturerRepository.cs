@@ -9,5 +9,6 @@ namespace PSC.Manufacturer.API.DataAccess
         Task<List<Core.Entities.Manufacturer>> Search(ManufacturerFilter filter);
         Task<string> Update(Core.Entities.Manufacturer manufacturer);
         Task<Core.Entities.Manufacturer> GetManufacturerById(int id);
+        Task<List<ManufacturerListItemDto>> GetAll();
     }
 }

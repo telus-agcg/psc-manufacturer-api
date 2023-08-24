@@ -228,5 +228,28 @@ namespace PSC.Manufacturer.API.Tests.Controllers
             var resultObject = Assert.IsType<BadRequestObjectResult>(result);
         }
 
+
+
+        [Fact]
+        public async Task GetAll_Succeeds()
+        {
+            _repository.Setup(x => x.GetAll())
+                .ReturnsAsync(new List<Core.Dtos.ManufacturerListItemDto>());
+
+            var result = await _controller.GetAll();
+             Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task GetAll_Throws()
+        {
+            _repository.Setup(x => x.GetAll())
+                .Throws(new Exception());
+
+            var result = await _controller.GetAll();
+            var statusResult = Assert.IsType<StatusCodeResult>(result);
+            Assert.Equal(StatusCodes.Status500InternalServerError, statusResult.StatusCode);
+        }
+
     }
 }
