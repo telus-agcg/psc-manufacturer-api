@@ -55,7 +55,22 @@ namespace PSC.Manufacturer.API.Controllers
                 return StatusCode(500);
             }
         }
-        
+
+        [HttpGet("all")]
+        public async Task<ActionResult> GetAll()
+        {
+            try
+            {
+                var result = await _repository.GetAll();
+                return new OkObjectResult(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(500);
+            }
+        }
+
         [HttpGet("Search")]
         public async Task<ActionResult> Search([FromQuery] ManufacturerFilter filter)
         {

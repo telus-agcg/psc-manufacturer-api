@@ -2,7 +2,6 @@
 using PSC.Manufacturer.API.Core;
 using PSC.Manufacturer.API.Core.Dtos;
 
-
 namespace PSC.Manufacturer.API.DataAccess
 {
     public class ManufacturerRepository : IManufacturerRepository
@@ -59,6 +58,13 @@ namespace PSC.Manufacturer.API.DataAccess
             var result = _context.Manufacturers.Update(manufacturer);
             await _context.SaveChangesAsync();
             return "Updated";
+        }
+
+        public async Task<List<ManufacturerListItemDto>> GetAll()
+        {
+            return await _context.Manufacturers.AsNoTracking()
+                .Select(x => new ManufacturerListItemDto { Mfg_Key = x.Mfg_Key, Mfg_Name = x.Mfg_Name, Vendor_Key = x.Vendor_Key })
+                .ToListAsync();
         }
     }
 }
