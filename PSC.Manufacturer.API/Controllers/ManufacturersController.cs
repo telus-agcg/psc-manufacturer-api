@@ -117,6 +117,40 @@ namespace PSC.Manufacturer.API.Controllers
             }
         }
 
+        // POST api/<ManufacturersController>
+        [HttpPost("collection")]
+        public async Task<ActionResult> PostMany([FromBody] IEnumerable<Core.Entities.Manufacturer> manufacturer)
+        {
+            try
+            {
+                if (manufacturer.Any(x => x.Mfg_Key != 0))
+                {
+                    return BadRequest("Cannot specify key for new record. Please remove mfg_key or set to 0.");
+                }
+
+                if (!manufacturer.Select(x => x.Vendor_Key).Distinct().All(_vendorRepository.CheckIfVendorExists))
+                {
+                    return BadRequest("Vendor does not exist");
+                }
+
+                foreach (var mfg in manufacturer)
+                {
+                    if (mfg.Inserted_Date_Time.Year == 0001)
+                    {
+                        mfg.Inserted_Date_Time = DateTime.Now;
+                    }
+                }
+
+                var result = await _repository.CreateCollection(manufacturer);
+                return new OkObjectResult(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(500);
+            }
+        }
+
         // PUT api/<ManufacturersController>/5
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] Core.Entities.Manufacturer manufacturer)

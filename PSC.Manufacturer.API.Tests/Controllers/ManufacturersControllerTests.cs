@@ -147,6 +147,25 @@ namespace PSC.Manufacturer.API.Tests.Controllers
             var resultObject = Assert.IsType<BadRequestObjectResult>(result);
         }
 
+
+        [Fact]
+        public async Task CreateMany_Succeeds()
+        {
+            var testData = new[] { new Core.Entities.Manufacturer() };
+            var testKey = 123;
+
+            _vendorRepository.Setup(x => x.CheckIfVendorExists(It.IsAny<int>()))
+                .Returns(true);
+
+            _repository.Setup(x => x.CreateCollection(It.IsAny<IEnumerable<Core.Entities.Manufacturer>>()))
+                .ReturnsAsync(new[] { new Core.Entities.Manufacturer { Mfg_Key = testKey } });
+
+            var result = await _controller.PostMany(testData) as OkObjectResult;
+
+            var resultObject = Assert.IsAssignableFrom<IEnumerable<Core.Entities.Manufacturer>>(result.Value);
+            Assert.Equal(testKey, resultObject.First().Mfg_Key);
+        }
+
         [Fact]
         public async Task Update_Succeeds()
         {
