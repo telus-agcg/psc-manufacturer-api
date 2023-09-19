@@ -10,5 +10,6 @@ namespace PSC.Manufacturer.API.DataAccess
         Task<string> Update(Core.Entities.Manufacturer manufacturer);
         Task<Core.Entities.Manufacturer> GetManufacturerById(int id);
         Task<List<ManufacturerListItemDto>> GetAll();
+        Task<IEnumerable<Core.Entities.Manufacturer>> CreateCollection(IEnumerable<Core.Entities.Manufacturer> manufacturer);
     }
 }

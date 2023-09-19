@@ -53,6 +53,14 @@ namespace PSC.Manufacturer.API.DataAccess
             return result.Entity.Mfg_Key;
         }
 
+        public async Task<IEnumerable<Core.Entities.Manufacturer>> CreateCollection(IEnumerable<Core.Entities.Manufacturer> manufacturer)
+        {
+            await _context.Manufacturers.AddRangeAsync(manufacturer);
+            await _context.SaveChangesAsync();
+            return manufacturer;
+        }
+
+
         public async Task<string> Update(Core.Entities.Manufacturer manufacturer)
         {
             var result = _context.Manufacturers.Update(manufacturer);
