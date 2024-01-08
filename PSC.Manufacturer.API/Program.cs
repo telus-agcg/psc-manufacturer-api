@@ -5,6 +5,7 @@ using PSC.Manufacturer.API.DataAccess;
 using System.Reflection;
 using NLog.Web;
 using PSC.Manufacturer.Api;
+using PSC.Manufacturer.API;
 
 // Setup logging
 static LoggingConfiguration GetNLogConfig()
@@ -53,7 +54,16 @@ try
     builder.Services.AddTransient<IManufacturerRepository, ManufacturerRepository>();
     builder.Services.AddTransient<IVendorRepository, VendorRepository>();
 
-    builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader()));
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(PolicyConsts.AllowAllPolicy, builder =>
+        {
+            builder.AllowAnyOrigin();
+            builder.AllowAnyHeader();
+            builder.AllowAnyMethod();
+            builder.SetPreflightMaxAge(System.TimeSpan.FromSeconds(600));
+        });
+    });
 
     var app = builder.Build();
 
@@ -73,7 +83,7 @@ try
 
     app.UseAuthorization();
 
-    app.UseCors();
+    app.UseCors(PolicyConsts.AllowAllPolicy);
 
     app.MapControllers();
 
