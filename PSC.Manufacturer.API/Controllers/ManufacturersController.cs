@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PSC.Manufacturer.API.Core;
 using PSC.Manufacturer.API.Core.Dtos;
+using PSC.Manufacturer.API.Core.Entities;
 using PSC.Manufacturer.API.DataAccess;
 
 namespace PSC.Manufacturer.API.Controllers
@@ -11,12 +12,18 @@ namespace PSC.Manufacturer.API.Controllers
     {
         private readonly IManufacturerRepository _repository;
         private readonly IVendorRepository _vendorRepository;
+        private readonly IApiLogRepository _apiLogRepository;
         private readonly ILogger<ManufacturersController> _logger;
 
-        public ManufacturersController(IManufacturerRepository repository, IVendorRepository vendorRepository, ILogger<ManufacturersController> logger)
+        public ManufacturersController(
+            IManufacturerRepository repository,
+            IVendorRepository vendorRepository,
+            IApiLogRepository apiLogRepository,
+            ILogger<ManufacturersController> logger)
         {
             _repository = repository;
             _vendorRepository = vendorRepository;
+            _apiLogRepository = apiLogRepository;
             _logger = logger;
         }
 
@@ -181,6 +188,36 @@ namespace PSC.Manufacturer.API.Controllers
                 _logger.LogError(ex.Message, ex);
                 return StatusCode(500);
             }
+        }
+
+
+        [HttpGet("/healthcheck")]
+        public async Task<IActionResult> Healthcheck()
+        {
+            var tracker = new HealthcheckTracker();
+            return Ok(
+                new[]
+                {
+                    await tracker.Track(
+                        "Database Read",
+                        async () =>
+                        {
+                            await _apiLogRepository.ReadLog();
+                        }),
+                    await tracker.Track(
+                        "Database Write",
+                        async () =>
+                        {
+                            await _apiLogRepository.WriteLog(new ApiLog { Message = "Healthcheck", Date = DateTime.UtcNow });
+                        }),
+                    await tracker.Track(
+                        "Logger",
+                        () =>
+                        {
+                            _logger.LogError("Healthcheck");
+                            return Task.CompletedTask;
+                        }),
+                });
         }
     }
 }

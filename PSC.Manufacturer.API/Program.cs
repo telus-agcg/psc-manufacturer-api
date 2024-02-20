@@ -53,6 +53,7 @@ try
 
     builder.Services.AddTransient<IManufacturerRepository, ManufacturerRepository>();
     builder.Services.AddTransient<IVendorRepository, VendorRepository>();
+    builder.Services.AddTransient<IApiLogRepository, ApiLogRepository>();
 
     builder.Services.AddCors(options =>
     {

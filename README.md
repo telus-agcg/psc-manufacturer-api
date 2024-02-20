@@ -12,3 +12,13 @@ Staging: [Staging swagger page](https://psc-manufacturer-api.staging.xsinc.com/P
 <br/>
 Prod: [Prod url](https://psc-manufacturer-api.xsinc.com/PSC_manufacturer_API/v1/)
 <br/>
+
+## Healthcheck
+GET /healthcheck
+<br/>
+Method takes no parameters. Method makes attempts to make requests to the db and write log.
+<br>
+Method returns healthcheck report for each attempt:
+ - Name
+ - Status ("Ok", or actual error message)
+ - Execution time in ms.
