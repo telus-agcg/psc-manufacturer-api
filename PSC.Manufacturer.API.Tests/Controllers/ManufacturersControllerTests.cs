@@ -1,10 +1,4 @@
-﻿using Microsoft.VisualStudio.TestPlatform.Common.Exceptions;
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Moq;
 using PSC.Manufacturer.API.Controllers;
 using Microsoft.Extensions.Logging;
 using PSC.Manufacturer.API.DataAccess;
@@ -18,6 +12,7 @@ namespace PSC.Manufacturer.API.Tests.Controllers
         private readonly Mock<ILogger<ManufacturersController>> _logger;
         private readonly Mock<IManufacturerRepository> _repository;
         private readonly Mock<IVendorRepository> _vendorRepository;
+        private readonly Mock<IApiLogRepository> _apiLogRepository;
         private readonly ManufacturersController _controller;
 
         public ManufacturersControllerTests()
@@ -25,7 +20,8 @@ namespace PSC.Manufacturer.API.Tests.Controllers
             _logger = new Mock<ILogger<ManufacturersController>>();
             _repository = new Mock<IManufacturerRepository>();
             _vendorRepository = new Mock<IVendorRepository>();
-            _controller = new ManufacturersController(_repository.Object, _vendorRepository.Object, _logger.Object);
+            _apiLogRepository = new Mock<IApiLogRepository>();
+            _controller = new ManufacturersController(_repository.Object, _vendorRepository.Object, _apiLogRepository.Object, _logger.Object);
         }
 
         [Fact]
